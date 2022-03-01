@@ -1,9 +1,12 @@
-from flask import Flask, render_template
+import sqlite3
+from sqlite3 import Error
+
+from flask import Flask, render_template, request, session, redirect
 
 app = Flask(__name__)
 # GitHub Token: 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
 
-DATABASE = "smile.db"
+DATABASE = "C:/Users/18044/PycharmProjects/Smile/smile.db"
 
 def create_connection(db_file):
     """
@@ -14,9 +17,10 @@ def create_connection(db_file):
     try:
         connection = sqlite3.connect(db_file)
         return connection
-    except:
-        print("Error")
+    except Error as e:
+        print(e)
         return None
+
 
 @app.route('/')
 def render_homepage():
