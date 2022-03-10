@@ -45,6 +45,23 @@ def render_contact_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def render_login_page():
+    if request.method == 'POST':
+        email = request.form.get('email').strip().lower()
+        password = request.form.get('password').strip()
+        query = """SELECT id, fname FROM customer WHERE email = ? AND password = ?"""
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (email, password))
+        user_data = cur.fetchall()
+        con.close()
+        try:
+            userid = user_data[0][0]
+            firstname = user_data[0][1]
+            #db_password = user_data[0][2]
+        except IndexError:
+            return redirect('/login?error=email+or+password+is+invalid')
+        print(userid, firstname)
+
     return render_template('login.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
