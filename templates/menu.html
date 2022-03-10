@@ -5,6 +5,7 @@ menu
 {% endblock %}
 
 {% block main %}
+    <div class="products">
     {% for product in products %}
     <div class="product-box">
         <h3>{{ product[0] }}</h3>
@@ -15,4 +16,5 @@ menu
     </div>
     <br>
     {% endfor %}
+    </div>
 {% endblock %}

@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 DATABASE = "C:/Users/18044/PycharmProjects/Smile/smile.db"
 
+
 def create_connection(db_file):
     """
     Create a connection with the database
@@ -42,5 +43,37 @@ def render_menu_page():
 def render_contact_page():
     return render_template('contact.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def render_login_page():
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def render_signup_page():
+    if request.method == 'POST':
+        print(request.form)
+        fname = request.form.get('fname').title().strip()
+        lname = request.form.get('lname').title().strip()
+        email = request.form.get('email').lower().strip()
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
+        if password != password2:
+            return redirect('/signup?error=Passwords+do+not+match')
+        if len(password) < 8:
+            return redirect('/signup?error=Password+must+be+eight+or+more+characters')
+
+        try:
+            con = create_connection(DATABASE)
+            query = "INSERT INTO customer (id, fname, lname, email, password) VALUES (NULL, ?, ?, ?, ?)"
+            cur = con.cursor()  # Create cursor to run the query
+            cur.execute(query, (fname, lname, email, password))  # Runs the query
+            con.commit()
+            con.close()
+            return redirect('/login')
+        except:
+            return redirect('/signup?error=Email+is+already+taken')
+    error = request.args.get('error')
+    if error == None:
+        error = ""
+    return render_template('signup.html', error=error)
 
 app.run(host='0.0.0.0', debug=True)
