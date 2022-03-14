@@ -190,6 +190,10 @@ table {
 
 }
 
+.message {
+    color: limegreen;
+}
+
 @media only screen and (max-width: 600px) {
     .container {
         width: 100%;
