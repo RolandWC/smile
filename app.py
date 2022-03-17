@@ -36,9 +36,18 @@ def is_logged_in():
         print("Logged in")
         return True
 
+
 @app.route('/')
 def render_homepage():
-    return render_template('home.html', logged_in=is_logged_in())
+    session_data = list(session.keys())
+    print(session_data)
+    fname = session.get('fname')
+    if fname == None:
+        fname = ""
+    message = request.args.get('message')
+    if message == None:
+        message = ""
+    return render_template('home.html', logged_in=is_logged_in(), name=fname, message=message)
 
 
 @app.route('/menu')
@@ -55,6 +64,7 @@ def render_menu_page():
 @app.route('/contact')
 def render_contact_page():
     return render_template('contact.html', logged_in=is_logged_in())
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def render_login_page():
@@ -82,7 +92,7 @@ def render_login_page():
         session['user_id'] = userid
         session['fname'] = firstname
         session['cart'] = []
-        return redirect('/')
+        return redirect('/?message=Successfully+logged+in+as+{}'.format(session.get('fname')))
     error = request.args.get('error')
     message = request.args.get('message')
     if error == None:
@@ -98,6 +108,7 @@ def render_logout_page():
     print(list(session.keys()))
     [session.pop(key) for key in list(session.keys())]
     return redirect('/login?message=Logged+out+successfully')
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def render_signup_page():
