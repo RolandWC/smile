@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 
+from datetime import datetime
+
 from flask import Flask, render_template, request, session, redirect
 from flask_bcrypt import Bcrypt
 
@@ -53,13 +55,33 @@ def render_homepage():
 @app.route('/menu')
 def render_menu_page():
     con = create_connection(DATABASE)
-    query = "SELECT name, description, volume, price, image FROM product"
+    query = "SELECT name, description, volume, price, image, id FROM product"
     cur = con.cursor()  # Create cursor to run the query
     cur.execute(query)  # Runs the query
     product_list = cur.fetchall()
     con.close()
     return render_template('menu.html', products=product_list, logged_in=is_logged_in())
 
+
+@app.route('/addtocart/<product_id>')
+def render_addtocart_page(product_id):
+    print("Add {} to cart".format(product_id))
+    try:
+        product_id = int(product_id)
+    except:
+        return redirect('/')
+    try:
+        customerid = session['customer_id']
+    except KeyError:
+        return redirect('/login?error=You+must+login+before+ordering')
+    timestamp = datetime.now()
+    query = "INSERT INTO cart (customerid, productid, timestamp) VALUES (?, ?, ?)"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (customerid, product_id, timestamp))
+    con.commit()
+    con.close()
+    return redirect(request.referrer)
 
 @app.route('/contact')
 def render_contact_page():
@@ -89,7 +111,7 @@ def render_login_page():
             return redirect('/login?error=Email+or+password+is+invalid')
         # Set up a session for this login
         session['email'] = email
-        session['user_id'] = userid
+        session['customer_id'] = userid
         session['fname'] = firstname
         session['cart'] = []
         return redirect('/?message=Successfully+logged+in+as+{}'.format(session.get('fname')))
