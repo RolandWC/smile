@@ -22,6 +22,7 @@ def create_connection(db_file):
     """
     try:
         connection = sqlite3.connect(db_file)
+        connection.execute('pragma foreign_keys=ON')
         return connection
     except Error as e:
         print(e)
@@ -49,7 +50,10 @@ def render_homepage():
     message = request.args.get('message')
     if message == None:
         message = ""
-    return render_template('home.html', logged_in=is_logged_in(), name=fname, message=message)
+    error = request.args.get('error')
+    if error == None:
+        error = ""
+    return render_template('home.html', logged_in=is_logged_in(), name=fname, message=message, error=error)
 
 
 @app.route('/menu')
@@ -67,21 +71,62 @@ def render_menu_page():
 def render_addtocart_page(product_id):
     print("Add {} to cart".format(product_id))
     try:
-        product_id = int(product_id)
-    except:
-        return redirect('/')
-    try:
         customerid = session['customer_id']
     except KeyError:
         return redirect('/login?error=You+must+login+before+ordering')
+    try:
+        product_id = int(product_id)
+    except ValueError:
+        return redirect('/?error=Invalid+product+ID')
     timestamp = datetime.now()
     query = "INSERT INTO cart (customerid, productid, timestamp) VALUES (?, ?, ?)"
     con = create_connection(DATABASE)
     cur = con.cursor()
-    cur.execute(query, (customerid, product_id, timestamp))
+    try:
+        cur.execute(query, (customerid, product_id, timestamp))
+    except sqlite3.IntegrityError as e:
+        print(e)
+        con.close()
+        return redirect('/?error=Invalid+product+ID')
     con.commit()
-    con.close()
     return redirect(request.referrer)
+
+
+@app.route('/cart')
+def render_cart():
+    if not is_logged_in():
+        return redirect('/login?error=You+must+login+first')
+    userid = session['customer_id']
+    query = "SELECT productid FROM cart WHERE customerid=?;"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (userid,))
+    product_ids = cur.fetchall()
+    print(product_ids)
+
+    for i in range(len(product_ids)):
+        product_ids[i] = product_ids[i][0]
+    print(product_ids)
+    unique_product_ids = list(set(product_ids))
+    print(unique_product_ids)
+    for i in range(len(unique_product_ids)):
+        product_count = product_ids.count(unique_product_ids[i])
+        unique_product_ids[i] = [unique_product_ids[i], product_count]
+    print(unique_product_ids)
+    query = """SELECT name, price FROM product WHERE id = ?;"""
+    for item in unique_product_ids:
+        cur.execute(query, (item[0],))
+        item_details = cur.fetchall()
+        print(item_details)
+        item.append((item_details[0][0]))
+        item.append((item_details[0][1]))
+    con.close()
+    print(unique_product_ids)
+    total_price = 0
+    for product in unique_product_ids:
+        total_price += product[1] * product[3]
+    print(total_price)
+    return render_template('cart.html', cart_data=unique_product_ids, total_price=total_price, logged_in=is_logged_in())
 
 @app.route('/contact')
 def render_contact_page():
@@ -153,7 +198,7 @@ def render_signup_page():
             cur.execute(query, (fname, lname, email, hashed_password))  # Runs the query
             con.commit()
             con.close()
-            return redirect('/login')
+            return redirect('/login?message=Account+created+successfully')
         except:
             return redirect('/signup?error=Email+is+already+taken')
     error = request.args.get('error')

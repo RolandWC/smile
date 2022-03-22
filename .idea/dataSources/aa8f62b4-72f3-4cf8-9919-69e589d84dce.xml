@@ -1356,89 +1356,95 @@
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="499" parent="171" name="id">
+    <foreign-key id="499" parent="170">
+      <ColNames>productid</ColNames>
+      <RefTableName>product</RefTableName>
+      <RefKeyName>product_pk</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="500" parent="171" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="500" parent="171" name="fname">
+    <column id="501" parent="171" name="fname">
       <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
     </column>
-    <column id="501" parent="171" name="lname">
+    <column id="502" parent="171" name="lname">
       <Position>3</Position>
       <DataType>varchar(20)|0s</DataType>
     </column>
-    <column id="502" parent="171" name="email">
+    <column id="503" parent="171" name="email">
       <Position>4</Position>
       <DataType>varchar(50)|0s</DataType>
     </column>
-    <column id="503" parent="171" name="password">
+    <column id="504" parent="171" name="password">
       <Position>5</Position>
       <DataType>char(60)|0s</DataType>
     </column>
-    <index id="504" parent="171" name="customer_email_uindex">
+    <index id="505" parent="171" name="customer_email_uindex">
       <ColNames>email</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="505" parent="171" name="user_pk">
+    <key id="506" parent="171" name="user_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="506" parent="172" name="price">
+    <column id="507" parent="172" name="price">
       <Position>1</Position>
       <DataType>decimal(4,2 digit)|0s</DataType>
     </column>
-    <column id="507" parent="172" name="id">
+    <column id="508" parent="172" name="id">
       <Position>2</Position>
       <DataType>integer|0s</DataType>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="508" parent="172" name="name">
+    <column id="509" parent="172" name="name">
       <Position>3</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <column id="509" parent="172" name="description">
+    <column id="510" parent="172" name="description">
       <Position>4</Position>
       <DataType>varchar(300)|0s</DataType>
     </column>
-    <column id="510" parent="172" name="volume">
+    <column id="511" parent="172" name="volume">
       <Position>5</Position>
       <DataType>varchar(6)|0s</DataType>
     </column>
-    <column id="511" parent="172" name="image">
+    <column id="512" parent="172" name="image">
       <Position>6</Position>
       <DataType>varchar(30)|0s</DataType>
     </column>
-    <key id="512" parent="172" name="product_pk">
+    <key id="513" parent="172" name="product_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="513" parent="173" name="type">
+    <column id="514" parent="173" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="514" parent="173" name="name">
+    <column id="515" parent="173" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="515" parent="173" name="tbl_name">
+    <column id="516" parent="173" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="516" parent="173" name="rootpage">
+    <column id="517" parent="173" name="rootpage">
       <Position>4</Position>
       <DataType>int|0s</DataType>
     </column>
-    <column id="517" parent="173" name="sql">
+    <column id="518" parent="173" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="518" parent="174" name="name">
+    <column id="519" parent="174" name="name">
       <Position>1</Position>
     </column>
-    <column id="519" parent="174" name="seq">
+    <column id="520" parent="174" name="seq">
       <Position>2</Position>
     </column>
   </database-model>
