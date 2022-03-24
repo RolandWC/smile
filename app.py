@@ -2,6 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 from datetime import datetime
+import time
 
 from flask import Flask, render_template, request, session, redirect
 from flask_bcrypt import Bcrypt
@@ -127,6 +128,38 @@ def render_cart():
         total_price += product[1] * product[3]
     print(total_price)
     return render_template('cart.html', cart_data=unique_product_ids, total_price=total_price, logged_in=is_logged_in())
+
+
+@app.route('/removeonefromcart/<productid>')
+def render_removeonefromcart(productid):
+    if is_logged_in():
+        userid = session['customer_id']
+    else:
+        return redirect('/login?error=You+must+login+first')
+    print("Remove: {}".format(productid))
+    query = "DELETE FROM CART WHERE id = (SELECT min(id) FROM cart WHERE productid=? and customerid=?)"
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    cur.execute(query, (productid, userid))
+    con.commit()
+    con.close()
+    return redirect('/cart')
+
+
+@app.route('/confirmorder')
+def confirm_order():
+    if is_logged_in():
+        userid = session['customer_id']
+    else:
+        return redirect('/login?error=You+must+login+first')
+    con = create_connection(DATABASE)
+    cur = con.cursor()
+    query = "DELETE FROM cart WHERE customerid=?"
+    cur.execute(query, (userid,))
+    con.commit()
+    con.close()
+    return redirect('/?message=Order+ID+{}+completed'.format(time.time()))
+
 
 @app.route('/contact')
 def render_contact_page():
